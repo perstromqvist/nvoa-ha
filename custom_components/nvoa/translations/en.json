@@ -49,7 +49,7 @@
           "advance_days": "Days of advance notice"
         },
         "data_description": {
-          "advance_days": "The “Pickup soon” sensor turns on this many days before a pickup and stays on until the end of the pickup day. 1 = from the evening before."
+          "advance_days": "The “Pickup soon” sensor turns on this many days before a pickup and stays on until the end of the pickup day. 1 = from the start of the day before."
         }
       }
     }
