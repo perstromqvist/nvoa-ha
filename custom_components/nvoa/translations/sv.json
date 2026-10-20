@@ -49,7 +49,7 @@
           "advance_days": "Dagar i förväg"
         },
         "data_description": {
-          "advance_days": "Sensorn ”Hämtning snart” slås på så här många dagar före en hämtning och är på till slutet av hämtningsdagen. 1 = från kvällen före."
+          "advance_days": "Sensorn ”Hämtning snart” slås på så här många dagar före en hämtning och är på till slutet av hämtningsdagen. 1 = från början av dagen före."
         }
       }
     }
