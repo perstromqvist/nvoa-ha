@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Find your address",
+        "description": "Enter at least 3 characters of your street address, for example “Storgatan 1”. Up to 10 matches are shown, so be specific.",
+        "data": {
+          "search": "Address"
+        }
+      },
+      "select": {
+        "title": "Select your address",
+        "description": "Address missing? Cancel and search again with a longer text.",
+        "data": {
+          "address": "Address"
+        }
+      },
+      "reconfigure": {
+        "title": "Change address",
+        "description": "Enter at least 3 characters of the new street address.",
+        "data": {
+          "search": "Address"
+        }
+      },
+      "reconfigure_select": {
+        "title": "Select the new address",
+        "data": {
+          "address": "Address"
+        }
+      }
+    },
+    "error": {
+      "search_too_short": "Enter at least 3 characters.",
+      "no_results": "No addresses found. Check the spelling.",
+      "cannot_connect": "Cannot reach NVOA. Try again later.",
+      "invalid_response": "NVOA returned an unexpected response.",
+      "no_services": "No active waste services were found for this address."
+    },
+    "abort": {
+      "already_configured": "This address is already configured.",
+      "reconfigure_successful": "The address was changed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "NVOA options",
+        "data": {
+          "advance_days": "Days of advance notice"
+        },
+        "data_description": {
+          "advance_days": "The “Pickup soon” sensor turns on this many days before a pickup and stays on until the end of the pickup day. 1 = from the evening before."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "next_pickup": {
+        "name": "Next pickup"
+      }
+    },
+    "binary_sensor": {
+      "pickup_soon": {
+        "name": "Pickup soon"
+      }
+    }
+  }
+}

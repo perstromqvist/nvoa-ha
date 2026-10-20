@@ -1,0 +1,192 @@
+{
+  "RhServices": [
+    {
+      "BinDirection": "Handtag och hjul vänt mot fastighet",
+      "NextWastePickup": "2026-10-23",
+      "WastePickupsPerYear": 52,
+      "WasteType": "Restavfall",
+      "WastePickupFrequency": "Fredag udda vecka ",
+      "WastePickupFrequencyCode": "Fredag udda vecka ",
+      "BinType": {
+        "Code": "190kärll",
+        "Size": 190.0,
+        "Unit": "L",
+        "ContainerType": "Kärl"
+      },
+      "NumberOfBins": 1.0,
+      "Fee": {
+        "Description": "Restavfall 190-literskärl",
+        "BinType": {
+          "Code": "190kärll",
+          "Size": 190.0,
+          "Unit": "L",
+          "ContainerType": "Kärl"
+        },
+        "WastePickupsPerYear": 52,
+        "WastePickupFrequency": "Varje vecka",
+        "WastePickupFrequencyCode": "H11",
+        "WasteType": "Restavfall",
+        "ChangeSizeOfBinText": null,
+        "ChangeFrequencyText": null,
+        "Code": "R190",
+        "Product": "RENH",
+        "PartProduct": "REST",
+        "Designation": "Restavfall 190-literskärl",
+        "CalculatedCost": 0,
+        "IsCostCalculated": false,
+        "PartYearStarts": "/Date(-62135596800000)/",
+        "PartYearEnds": "/Date(-62135596800000)/",
+        "PartYearDescription": "",
+        "ID": 0
+      },
+      "NumberOfBinsAntl": 0,
+      "IsActive": true,
+      "ID": 142911,
+      "Description": "Restavfall 190-literskärl",
+      "StartDate": "/Date(1009839600000)/",
+      "StopDate": "/Date(-62135596800000)/",
+      "BuildingID": "000000"
+    },
+    {
+      "BinDirection": "Handtag och hjul ut mot vägen",
+      "NextWastePickup": "2026-10-30",
+      "WastePickupsPerYear": 26,
+      "WasteType": "Plast/Papper",
+      "WastePickupFrequency": "Fredag jämn vecka ",
+      "WastePickupFrequencyCode": "Fredag jämn vecka ",
+      "BinType": {
+        "Code": "TF370",
+        "Size": 370.0,
+        "Unit": "L",
+        "ContainerType": "Tvåfackskärl"
+      },
+      "NumberOfBins": 1.0,
+      "Fee": {
+        "Description": "Ny tjänst tvåfackskärl 2 plast och papper",
+        "BinType": {
+          "Code": "TF370",
+          "Size": 370.0,
+          "Unit": "L",
+          "ContainerType": "Tvåfackskärl"
+        },
+        "WastePickupsPerYear": 26,
+        "WastePickupFrequency": "Varannan vecka",
+        "WastePickupFrequencyCode": "H20",
+        "WasteType": "Plast/Papper",
+        "ChangeSizeOfBinText": null,
+        "ChangeFrequencyText": null,
+        "Code": "NYKÄ2",
+        "Product": "RENH",
+        "PartProduct": null,
+        "Designation": "Ny tjänst tvåfackskärl 2 plast och papper",
+        "CalculatedCost": 0,
+        "IsCostCalculated": false,
+        "PartYearStarts": "/Date(-62135596800000)/",
+        "PartYearEnds": "/Date(-62135596800000)/",
+        "PartYearDescription": "",
+        "ID": 0
+      },
+      "NumberOfBinsAntl": 0,
+      "IsActive": true,
+      "ID": 244238,
+      "Description": "Ny tjänst tvåfackskärl 2 plast och papper",
+      "StartDate": "/Date(1767222000000)/",
+      "StopDate": "/Date(-62135596800000)/",
+      "BuildingID": "000000"
+    },
+    {
+      "BinDirection": "Handtag och hjul vänt mot fastighet",
+      "NextWastePickup": "2026-10-23",
+      "WastePickupsPerYear": 26,
+      "WasteType": "Mat/Rest",
+      "WastePickupFrequency": "Fredag udda vecka ",
+      "WastePickupFrequencyCode": "Fredag udda vecka ",
+      "BinType": {
+        "Code": "TF240",
+        "Size": 240.0,
+        "Unit": "L",
+        "ContainerType": "Tvåfackskärl"
+      },
+      "NumberOfBins": 1.0,
+      "Fee": {
+        "Description": "Ny tjänst tvåfackskärl 1 mat- och restavfall",
+        "BinType": {
+          "Code": "TF240",
+          "Size": 240.0,
+          "Unit": "L",
+          "ContainerType": "Tvåfackskärl"
+        },
+        "WastePickupsPerYear": 26,
+        "WastePickupFrequency": "Varannan vecka",
+        "WastePickupFrequencyCode": "H20",
+        "WasteType": "Mat/Rest",
+        "ChangeSizeOfBinText": null,
+        "ChangeFrequencyText": null,
+        "Code": "NYKÄ1",
+        "Product": "RENH",
+        "PartProduct": null,
+        "Designation": "Ny tjänst tvåfackskärl 1 mat- och restavfall",
+        "CalculatedCost": 0,
+        "IsCostCalculated": false,
+        "PartYearStarts": "/Date(-62135596800000)/",
+        "PartYearEnds": "/Date(-62135596800000)/",
+        "PartYearDescription": "",
+        "ID": 0
+      },
+      "NumberOfBinsAntl": 0,
+      "IsActive": true,
+      "ID": 244240,
+      "Description": "Ny tjänst tvåfackskärl 1 mat- och restavfall",
+      "StartDate": "/Date(1767222000000)/",
+      "StopDate": "/Date(-62135596800000)/",
+      "BuildingID": "000000"
+    },
+    {
+      "BinDirection": "Handtag och hjul ut mot vägen",
+      "NextWastePickup": "2026-11-10",
+      "WastePickupsPerYear": 4,
+      "WasteType": "Glas OF/FG",
+      "WastePickupFrequency": "Glas, Vecka 7 Tisdag",
+      "WastePickupFrequencyCode": "Glas, Vecka 7 Tisdag",
+      "BinType": {
+        "Code": "TF140",
+        "Size": 140.0,
+        "Unit": "L",
+        "ContainerType": "Tvåfackskärl"
+      },
+      "NumberOfBins": 1.0,
+      "Fee": {
+        "Description": "Ny tjänst tvåfackskärl 3 färgat och ofärgat glas",
+        "BinType": {
+          "Code": "TF140",
+          "Size": 140.0,
+          "Unit": "L",
+          "ContainerType": "Tvåfackskärl"
+        },
+        "WastePickupsPerYear": 4,
+        "WastePickupFrequency": "4 ggr/år",
+        "WastePickupFrequencyCode": "H04",
+        "WasteType": "Glas OF/FG",
+        "ChangeSizeOfBinText": null,
+        "ChangeFrequencyText": null,
+        "Code": "NYKÄ3",
+        "Product": "RENH",
+        "PartProduct": null,
+        "Designation": "Ny tjänst tvåfackskärl 3 färgat och ofärgat glas",
+        "CalculatedCost": 0,
+        "IsCostCalculated": false,
+        "PartYearStarts": "/Date(-62135596800000)/",
+        "PartYearEnds": "/Date(-62135596800000)/",
+        "PartYearDescription": "",
+        "ID": 0
+      },
+      "NumberOfBinsAntl": 0,
+      "IsActive": true,
+      "ID": 244239,
+      "Description": "Ny tjänst tvåfackskärl 3 färgat och ofärgat glas",
+      "StartDate": "/Date(1767222000000)/",
+      "StopDate": "/Date(-62135596800000)/",
+      "BuildingID": "000000"
+    }
+  ]
+}

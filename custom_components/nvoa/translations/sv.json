@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sök din adress",
+        "description": "Ange minst 3 tecken av din gatuadress, till exempel ”Storgatan 1”. Högst 10 träffar visas, så var specifik.",
+        "data": {
+          "search": "Adress"
+        }
+      },
+      "select": {
+        "title": "Välj din adress",
+        "description": "Saknas adressen? Avbryt och sök igen med en längre text.",
+        "data": {
+          "address": "Adress"
+        }
+      },
+      "reconfigure": {
+        "title": "Byt adress",
+        "description": "Ange minst 3 tecken av den nya gatuadressen.",
+        "data": {
+          "search": "Adress"
+        }
+      },
+      "reconfigure_select": {
+        "title": "Välj den nya adressen",
+        "data": {
+          "address": "Adress"
+        }
+      }
+    },
+    "error": {
+      "search_too_short": "Ange minst 3 tecken.",
+      "no_results": "Inga adresser hittades. Kontrollera stavningen.",
+      "cannot_connect": "Kan inte nå NVOA. Försök igen senare.",
+      "invalid_response": "NVOA gav ett oväntat svar.",
+      "no_services": "Inga aktiva sophämtningstjänster hittades för adressen."
+    },
+    "abort": {
+      "already_configured": "Adressen är redan konfigurerad.",
+      "reconfigure_successful": "Adressen har ändrats."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "NVOA-inställningar",
+        "data": {
+          "advance_days": "Dagar i förväg"
+        },
+        "data_description": {
+          "advance_days": "Sensorn ”Hämtning snart” slås på så här många dagar före en hämtning och är på till slutet av hämtningsdagen. 1 = från kvällen före."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "next_pickup": {
+        "name": "Nästa hämtning"
+      }
+    },
+    "binary_sensor": {
+      "pickup_soon": {
+        "name": "Hämtning snart"
+      }
+    }
+  }
+}
