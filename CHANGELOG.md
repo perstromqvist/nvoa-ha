@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+- Fixed location of the brand images (now in `custom_components/nvoa/brand/`).
+
 ## 0.1.1
 
 - Added brand images (`icon`, `logo` and dark variants) in `custom_components/nvoa/brand/`. Shown in Home Assistant 2026.3 and newer.
