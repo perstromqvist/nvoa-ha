@@ -1,0 +1,32 @@
+name: Release
+
+# Creates a GitHub release (and its tag) whenever main contains a manifest.json
+# version that has no release yet. Release notes come from CHANGELOG.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release if the version is new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version custom_components/nvoa/manifest.json)
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists, nothing to do."
+            exit 0
+          fi
+          awk -v v="$version" '$0 == "## " v {f=1; next} /^## /{f=0} f' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Release $tag" > notes.md
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file notes.md
