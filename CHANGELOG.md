@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Redesigned brand images (`icon`, `logo` and dark variants): a single clean bin glyph with a check mark.
+
 ## 0.1.2
 
 - Fixed location of the brand images (now in `custom_components/nvoa/brand/`).
