@@ -91,7 +91,7 @@ All entities belong to one device per address (`NVOA <street>`). Entity IDs belo
 
 | Entity | Type | Description |
 |--------|------|-------------|
-| `sensor.nvoa_storgatan_1_restavfall` | date | Next pickup of that service. One sensor per active service. |
+| `sensor.nvoa_storgatan_1_restavfall` | date | Next pickup of that service. One sensor per service; it stays (as *unknown*) if NVOA temporarily stops listing the service. |
 | `sensor.nvoa_storgatan_1_mat_rest` | date | Same, for each additional service (Plast/Papper, Glas OF/FG and so on). |
 | `sensor.nvoa_storgatan_1_next_pickup` | date | Earliest upcoming pickup across all services. |
 | `binary_sensor.nvoa_storgatan_1_pickup_soon` | on/off | On from *N* days before a pickup until the end of the pickup day. |
@@ -102,7 +102,9 @@ All entities belong to one device per address (`NVOA <street>`). Entity IDs belo
 
 | Attribute | Example | Description |
 |-----------|---------|-------------|
+| `scheduled` | `true` | Whether NVOA currently has a pickup scheduled for the service. |
 | `days_until` | `3` | Days until the pickup. |
+| `service_id` | `244239` | NVOA's ID for the service the sensor currently follows. |
 | `frequency` | `Fredag udda vecka` | Pickup rhythm as NVOA describes it. |
 | `bin_direction` | `Handtag och hjul ut mot vägen` | How the bin should be placed. |
 | `bin_size` | `240 L` | Bin volume. |
@@ -171,7 +173,9 @@ Remember to replace the entity IDs with your own. You find them under **Settings
 | *No addresses found* in setup | Check the spelling, or search with fewer characters. NVOA lists addresses as `Street 12, Area (id)`. |
 | *Cannot reach NVOA* | NVOA's web service is down or your Home Assistant has no internet access. Try again later. |
 | *Unexpected response* | NVOA returned an error page, or its firewall rejected the request. Enable debug logging (below) and open an issue. |
-| Sensor shows *unknown* | The pickup date has passed and the next one has not been published yet. It recovers on the next refresh. |
+| Sensor shows *unknown* | The pickup date has passed and the next one has not been published yet. Infrequent services (glass is emptied quarterly) can drop out of NVOA's data for a while between periods. The sensor comes back by itself when NVOA schedules the service again, also if NVOA gives it a new ID. |
+
+To see exactly what NVOA returns, download diagnostics from the device page (⋮ → *Download diagnostics*). The address is redacted.
 
 Enable debug logging in `configuration.yaml`:
 
@@ -183,7 +187,7 @@ logger:
 
 ## 🙋 Contributing
 
-Issues and pull requests are welcome. If you use a service type that gets a poor name, icon or attributes, open an issue with the `Description` and `WasteType` values from your schedule (leave out the address). Tests run with `pytest` using [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component).
+Issues and pull requests are welcome. If you use a service type that gets a poor name, icon or attributes, open an issue with the `Description` and `WasteType` values from your schedule (or attach the diagnostics file). Tests run with `pytest` using [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component).
 
 ## 📄 License
 

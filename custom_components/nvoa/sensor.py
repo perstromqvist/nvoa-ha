@@ -7,10 +7,13 @@ from datetime import date
 from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .api import WasteService
+from .const import DOMAIN
 from .coordinator import NvoaConfigEntry, NvoaCoordinator
 from .entity import NvoaEntity
 
@@ -35,26 +38,77 @@ def _icon_for(waste_type: str) -> str:
     return "mdi:trash-can"
 
 
+def _same_type(a: str | None, b: str | None) -> bool:
+    return bool(a and b) and a.strip().casefold() == b.strip().casefold()
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: NvoaConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up sensors; services that appear later are added dynamically."""
+    """Set up sensors.
+
+    Service sensors outlive gaps in NVOA's data: infrequent services (glass is
+    emptied quarterly) can drop out of the response between periods. Sensors
+    created earlier are restored from the entity registry and show "unknown"
+    until NVOA schedules the service again, possibly under a new service ID,
+    in which case the existing sensor takes it over by waste type.
+    """
     coordinator = entry.runtime_data
     async_add_entities([NvoaNextPickupSensor(coordinator)])
 
-    known: set[int] = set()
+    sensors: list[NvoaServiceSensor] = []
+
+    # Restore sensors that exist in the registry, whether or not NVOA lists them now.
+    registry = er.async_get(hass)
+    prefix = f"{entry.entry_id}_"
+    for reg in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if reg.domain != Platform.SENSOR or reg.platform != DOMAIN:
+            continue
+        suffix = reg.unique_id.removeprefix(prefix)
+        if suffix == reg.unique_id or not suffix.isdigit():
+            continue
+        sid = int(suffix)
+        service = coordinator.data.get(sid)
+        waste_type = (
+            service.waste_type if service else reg.original_name or f"Service {sid}"
+        )
+        sensors.append(NvoaServiceSensor(coordinator, sid, waste_type))
 
     @callback
-    def _add_new_services() -> None:
-        new = [sid for sid in coordinator.data if sid not in known]
-        if new:
-            known.update(new)
-            async_add_entities(NvoaServiceSensor(coordinator, sid) for sid in new)
+    def _sync_services() -> None:
+        """Rebind orphaned sensors to new IDs, then add sensors for new services."""
+        data = coordinator.data or {}
+        claimed = {s.bound_id for s in sensors if s.bound_id in data}
+        for sensor in sensors:
+            if sensor.bound_id in data:
+                continue
+            match = next(
+                (
+                    sid
+                    for sid, svc in data.items()
+                    if sid not in claimed and _same_type(svc.waste_type, sensor.waste_type)
+                ),
+                None,
+            )
+            if match is not None:
+                claimed.add(match)
+                sensor.rebind(match)
 
-    _add_new_services()
-    entry.async_on_unload(coordinator.async_add_listener(_add_new_services))
+        new = [
+            NvoaServiceSensor(coordinator, sid, svc.waste_type)
+            for sid, svc in data.items()
+            if sid not in claimed
+        ]
+        if new:
+            sensors.extend(new)
+            async_add_entities(new)
+
+    restored = list(sensors)
+    _sync_services()
+    async_add_entities(restored)
+    entry.async_on_unload(coordinator.async_add_listener(_sync_services))
 
 
 class NvoaServiceSensor(NvoaEntity, SensorEntity):
@@ -62,27 +116,35 @@ class NvoaServiceSensor(NvoaEntity, SensorEntity):
 
     _attr_device_class = SensorDeviceClass.DATE
 
-    def __init__(self, coordinator: NvoaCoordinator, service_id: int) -> None:
+    def __init__(
+        self, coordinator: NvoaCoordinator, service_id: int, waste_type: str
+    ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
-        self._service_id = service_id
-        service = coordinator.data[service_id]
+        self.waste_type = waste_type
+        self.bound_id = service_id
+        self._last_service: WasteService | None = coordinator.data.get(service_id)
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{service_id}"
-        self._attr_name = service.waste_type
-        self._attr_icon = _icon_for(service.waste_type)
+        self._attr_name = waste_type
+        self._attr_icon = _icon_for(waste_type)
+
+    @callback
+    def rebind(self, service_id: int) -> None:
+        """Follow the service after NVOA moved it to a new ID."""
+        self.bound_id = service_id
+        if self.hass is not None:
+            self.async_write_ha_state()
 
     @property
     def _service(self) -> WasteService | None:
-        return self.coordinator.data.get(self._service_id)
-
-    @property
-    def available(self) -> bool:
-        """Unavailable if the update failed or NVOA dropped the service."""
-        return super().available and self._service is not None
+        service = (self.coordinator.data or {}).get(self.bound_id)
+        if service is not None:
+            self._last_service = service
+        return service
 
     @property
     def native_value(self) -> date | None:
-        """Next pickup date (None once it has passed and no refresh has landed yet)."""
+        """Next pickup date, None (unknown) when NVOA has none scheduled."""
         service = self._service
         if service is None or self.coordinator.days_until(service.next_pickup) is None:
             return None
@@ -92,19 +154,29 @@ class NvoaServiceSensor(NvoaEntity, SensorEntity):
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
         """Details about the bin and the pickup rhythm."""
         service = self._service
-        if service is None:
-            return None
-        return {
-            "days_until": self.coordinator.days_until(service.next_pickup),
-            "frequency": service.frequency,
-            "bin_direction": service.bin_direction,
-            "bin_size": service.bin_size,
-            "bin_type": service.bin_type,
-            "number_of_bins": service.number_of_bins,
-            "pickups_per_year": service.pickups_per_year,
-            "fee_code": service.fee_code,
-            "description": service.description,
+        info = service or self._last_service
+        attrs: dict[str, Any] = {
+            "scheduled": service is not None
+            and self.coordinator.days_until(service.next_pickup) is not None,
+            "days_until": (
+                self.coordinator.days_until(service.next_pickup) if service else None
+            ),
+            "service_id": self.bound_id,
         }
+        if info is not None:
+            attrs.update(
+                {
+                    "frequency": info.frequency,
+                    "bin_direction": info.bin_direction,
+                    "bin_size": info.bin_size,
+                    "bin_type": info.bin_type,
+                    "number_of_bins": info.number_of_bins,
+                    "pickups_per_year": info.pickups_per_year,
+                    "fee_code": info.fee_code,
+                    "description": info.description,
+                }
+            )
+        return attrs
 
 
 class NvoaNextPickupSensor(NvoaEntity, SensorEntity):

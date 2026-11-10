@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4
+
+- Service sensors no longer disappear when NVOA stops listing a service for a while. Infrequent services (glass is emptied quarterly) can drop out between periods; the sensor now stays and shows *unknown* instead of becoming unavailable and orphaned after a restart.
+- If NVOA brings the service back under a new ID, the existing sensor takes it over by waste type, keeping entity ID and history.
+- New attributes on service sensors: `scheduled` and `service_id`.
+- Diagnostics download with NVOA's raw response (address redacted).
+
 ## 0.1.3
 
 - Redesigned brand images (`icon`, `logo` and dark variants): a single clean bin glyph with a check mark.

@@ -165,6 +165,7 @@ class NvoaClient:
     def __init__(self, session: aiohttp.ClientSession) -> None:
         """Initialize the client."""
         self._session = session
+        self.last_schedule_payload: dict[str, Any] | None = None
 
     async def _request(self, method: str, url: str, **kwargs: Any) -> dict[str, Any]:
         headers = {**REQUEST_HEADERS, **kwargs.pop("headers", {})}
@@ -212,4 +213,5 @@ class NvoaClient:
     ) -> dict[int, WasteService]:
         """Fetch the active waste services for a full address string."""
         data = await self._request("GET", SCHEDULE_URL, params={"address": address})
+        self.last_schedule_payload = data
         return parse_services(data, today or date.today())

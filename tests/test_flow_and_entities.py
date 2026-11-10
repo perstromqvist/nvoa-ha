@@ -183,3 +183,59 @@ async def test_reconfigure_changes_address(
     assert entry.unique_id == "000001"
     assert entry.data[CONF_ADDRESS] == new_address
     assert entry.title == "Exempelvägen 2, Saltsjö-Boo"
+
+
+GLASS = "sensor.nvoa_exempelvagen_1_glas_of_fg"
+
+
+def _without_glass(schedule_payload):
+    payload = dict(schedule_payload)
+    payload["RhServices"] = [
+        s for s in schedule_payload["RhServices"] if s["WasteType"] != "Glas OF/FG"
+    ]
+    return payload
+
+
+async def _reload_with(hass, entry, search_payload, payload):
+    p1, p2, p3 = _patch_api(search_payload, payload)
+    with p1, p2, p3:
+        assert await hass.config_entries.async_reload(entry.entry_id)
+        await hass.async_block_till_done()
+
+
+async def test_service_gap_keeps_sensor(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory, search_payload, schedule_payload
+):
+    """A quarterly service dropping out survives a restart as 'unknown'."""
+    freezer.move_to("2026-10-22 12:00:00+02:00")
+    entry = await _setup(hass, search_payload, schedule_payload)
+    assert hass.states.get(GLASS).state == "2026-11-10"
+
+    await _reload_with(hass, entry, search_payload, _without_glass(schedule_payload))
+    glass = hass.states.get(GLASS)
+    assert glass.state == "unknown"
+    assert glass.attributes["scheduled"] is False
+
+    # NVOA schedules the next period under a new service ID: same entity takes it.
+    payload = _without_glass(schedule_payload)
+    new_glass = dict(
+        next(s for s in schedule_payload["RhServices"] if s["WasteType"] == "Glas OF/FG")
+    )
+    new_glass["ID"] = 999999
+    new_glass["NextWastePickup"] = "2027-02-09"
+    payload["RhServices"] = [*payload["RhServices"], new_glass]
+    await _reload_with(hass, entry, search_payload, payload)
+
+    glass = hass.states.get(GLASS)
+    assert glass.state == "2027-02-09"
+    assert glass.attributes["service_id"] == 999999
+    assert not [s for s in hass.states.async_all() if s.entity_id.startswith(GLASS + "_")]
+
+
+async def test_diagnostics(hass: HomeAssistant, search_payload, schedule_payload):
+    from custom_components.nvoa.diagnostics import async_get_config_entry_diagnostics
+
+    entry = await _setup(hass, search_payload, schedule_payload)
+    diag = await async_get_config_entry_diagnostics(hass, entry)
+    assert diag["entry"]["data"][CONF_ADDRESS] == "**REDACTED**"
+    assert "244239" in diag["services"]
