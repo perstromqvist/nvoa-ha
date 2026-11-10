@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Same as 0.1.4, without Python cache files that were accidentally included in that release. Update to this one.
+
 ## 0.1.4
 
 - Service sensors no longer disappear when NVOA stops listing a service for a while. Infrequent services (glass is emptied quarterly) can drop out between periods; the sensor now stays and shows *unknown* instead of becoming unavailable and orphaned after a restart.
