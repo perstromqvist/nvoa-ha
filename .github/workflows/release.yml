@@ -2,9 +2,13 @@ name: Release
 
 # Creates a GitHub release (and its tag) whenever main contains a manifest.json
 # version that has no release yet. Release notes come from CHANGELOG.md.
+# Runs only after the Validate workflow has passed on main, so a commit that
+# fails hassfest or the HACS check is never released.
 
 on:
-  push:
+  workflow_run:
+    workflows: [Validate]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -13,9 +17,14 @@ permissions:
 
 jobs:
   release:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
+    env:
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Create release if the version is new
         env:
@@ -29,4 +38,4 @@ jobs:
           fi
           awk -v v="$version" '$0 == "## " v {f=1; next} /^## /{f=0} f' CHANGELOG.md > notes.md
           [ -s notes.md ] || echo "Release $tag" > notes.md
-          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file notes.md
+          gh release create "$tag" --target "$SHA" --title "$tag" --notes-file notes.md
