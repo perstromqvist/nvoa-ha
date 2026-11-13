@@ -46,10 +46,12 @@
       "init": {
         "title": "NVOA-inställningar",
         "data": {
-          "advance_days": "Dagar i förväg"
+          "advance_days": "Dagar i förväg",
+          "pickup_done_time": "Hämtning klar kl."
         },
         "data_description": {
-          "advance_days": "Sensorn ”Hämtning snart” slås på så här många dagar före en hämtning och är på till slutet av hämtningsdagen. 1 = från början av dagen före."
+          "advance_days": "Sensorn ”Hämtning snart” slås på så här många dagar före en hämtning och är på tills hämtningen är klar (slutet av hämtningsdagen, eller tiden nedan). 1 = från början av dagen före.",
+          "pickup_done_time": "Valfritt. På hämtningsdagen slås ”Hämtning snart” av vid den här tiden i stället för vid midnatt, t.ex. 08:00 om kärlen brukar tömmas på morgonen. Lämna tomt för att den ska vara på hela dagen."
         }
       }
     }

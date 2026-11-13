@@ -16,6 +16,7 @@ CONF_ADDRESS: Final = "address"
 CONF_BUILDING_ID: Final = "building_id"
 CONF_SEARCH: Final = "search"
 CONF_ADVANCE_DAYS: Final = "advance_days"
+CONF_PICKUP_DONE_TIME: Final = "pickup_done_time"
 
 DEFAULT_ADVANCE_DAYS: Final = 1
 MAX_ADVANCE_DAYS: Final = 14

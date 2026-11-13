@@ -46,10 +46,12 @@
       "init": {
         "title": "NVOA options",
         "data": {
-          "advance_days": "Days of advance notice"
+          "advance_days": "Days of advance notice",
+          "pickup_done_time": "Pickup done at"
         },
         "data_description": {
-          "advance_days": "The “Pickup soon” sensor turns on this many days before a pickup and stays on until the end of the pickup day. 1 = from the start of the day before."
+          "advance_days": "The “Pickup soon” sensor turns on this many days before a pickup and stays on until the pickup is done (end of the pickup day, or the time below). 1 = from the start of the day before.",
+          "pickup_done_time": "Optional. On the pickup day, “Pickup soon” turns off at this time instead of at midnight, e.g. 08:00 if your bins are usually emptied in the morning. Leave empty to keep it on all day."
         }
       }
     }

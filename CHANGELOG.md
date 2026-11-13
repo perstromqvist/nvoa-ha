@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6
+
+- New option **Pickup done at** (*Hämtning klar kl.*): on the pickup day, *Pickup soon* turns off at this time instead of at midnight. Empty by default, which keeps the previous behaviour.
+- New attribute `pickup_done_time` on *Pickup soon*.
+
 ## 0.1.5
 
 - Same as 0.1.4, without Python cache files that were accidentally included in that release. Update to this one.

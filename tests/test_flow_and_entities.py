@@ -239,3 +239,63 @@ async def test_diagnostics(hass: HomeAssistant, search_payload, schedule_payload
     diag = await async_get_config_entry_diagnostics(hass, entry)
     assert diag["entry"]["data"][CONF_ADDRESS] == "**REDACTED**"
     assert "244239" in diag["services"]
+
+
+async def test_pickup_done_time(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory, search_payload, schedule_payload
+):
+    """With a pickup-done time, 'pickup soon' turns off at that time on the day."""
+    from datetime import timedelta
+
+    from pytest_homeassistant_custom_component.common import async_fire_time_changed
+
+    from custom_components.nvoa.const import CONF_PICKUP_DONE_TIME
+
+    await hass.config.async_set_time_zone("Europe/Stockholm")
+    eid = "binary_sensor.nvoa_exempelvagen_1_pickup_soon"
+    freezer.move_to("2026-10-23 07:30:00+02:00")  # pickup day for Mat/Rest
+    await _setup(
+        hass,
+        search_payload,
+        schedule_payload,
+        options={CONF_ADVANCE_DAYS: 1, CONF_PICKUP_DONE_TIME: "08:00:00"},
+    )
+    state = hass.states.get(eid)
+    assert state.state == "on"
+    assert state.attributes["pickup_done_time"] == "08:00"
+
+    freezer.tick(timedelta(minutes=30))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    state = hass.states.get(eid)
+    assert state.state == "off"
+    assert state.attributes["types"] == []
+
+    # Date sensors still show today's pickup.
+    assert hass.states.get("sensor.nvoa_exempelvagen_1_mat_rest").state == "2026-10-23"
+
+    # Clearing the option restores "on until midnight" right away.
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    hass.config_entries.async_update_entry(entry, options={CONF_ADVANCE_DAYS: 1})
+    await hass.async_block_till_done()
+    assert hass.states.get(eid).state == "on"
+
+
+async def test_options_flow_done_time(
+    hass: HomeAssistant, search_payload, schedule_payload
+):
+    from custom_components.nvoa.const import CONF_PICKUP_DONE_TIME
+
+    entry = await _setup(hass, search_payload, schedule_payload)
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {CONF_ADVANCE_DAYS: 2, CONF_PICKUP_DONE_TIME: "08:00:00"}
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.options == {CONF_ADVANCE_DAYS: 2, CONF_PICKUP_DONE_TIME: "08:00:00"}
+
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {CONF_ADVANCE_DAYS: 1}
+    )
+    assert entry.options == {CONF_ADVANCE_DAYS: 1}

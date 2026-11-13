@@ -22,6 +22,7 @@ from homeassistant.helpers.selector import (
     SelectSelectorConfig,
     SelectSelectorMode,
     TextSelector,
+    TimeSelector,
 )
 from homeassistant.util import dt as dt_util
 
@@ -36,6 +37,7 @@ from .const import (
     CONF_ADDRESS,
     CONF_ADVANCE_DAYS,
     CONF_BUILDING_ID,
+    CONF_PICKUP_DONE_TIME,
     CONF_SEARCH,
     DEFAULT_ADVANCE_DAYS,
     DOMAIN,
@@ -198,29 +200,40 @@ class NvoaConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class NvoaOptionsFlow(OptionsFlow):
-    """Advance notice for the 'pickup soon' binary sensor."""
+    """Advance notice and pickup-done time for the 'pickup soon' binary sensor."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
-            return self.async_create_entry(
-                data={CONF_ADVANCE_DAYS: int(user_input[CONF_ADVANCE_DAYS])}
-            )
-        current = self.config_entry.options.get(CONF_ADVANCE_DAYS, DEFAULT_ADVANCE_DAYS)
+            data: dict[str, Any] = {
+                CONF_ADVANCE_DAYS: int(user_input[CONF_ADVANCE_DAYS])
+            }
+            if done := user_input.get(CONF_PICKUP_DONE_TIME):
+                data[CONF_PICKUP_DONE_TIME] = done
+            return self.async_create_entry(data=data)
+
+        options = self.config_entry.options
+        schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_ADVANCE_DAYS,
+                    default=options.get(CONF_ADVANCE_DAYS, DEFAULT_ADVANCE_DAYS),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=0,
+                        max=MAX_ADVANCE_DAYS,
+                        step=1,
+                        mode=NumberSelectorMode.BOX,
+                    )
+                ),
+                vol.Optional(CONF_PICKUP_DONE_TIME): TimeSelector(),
+            }
+        )
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_ADVANCE_DAYS, default=current): NumberSelector(
-                        NumberSelectorConfig(
-                            min=0,
-                            max=MAX_ADVANCE_DAYS,
-                            step=1,
-                            mode=NumberSelectorMode.BOX,
-                        )
-                    )
-                }
+            data_schema=self.add_suggested_values_to_schema(
+                schema, {CONF_PICKUP_DONE_TIME: options.get(CONF_PICKUP_DONE_TIME)}
             ),
         )

@@ -94,7 +94,7 @@ All entities belong to one device per address (`NVOA <street>`). Entity IDs belo
 | `sensor.nvoa_storgatan_1_restavfall` | date | Next pickup of that service. One sensor per service; it stays (as *unknown*) if NVOA temporarily stops listing the service. |
 | `sensor.nvoa_storgatan_1_mat_rest` | date | Same, for each additional service (Plast/Papper, Glas OF/FG and so on). |
 | `sensor.nvoa_storgatan_1_next_pickup` | date | Earliest upcoming pickup across all services. |
-| `binary_sensor.nvoa_storgatan_1_pickup_soon` | on/off | On from *N* days before a pickup until the end of the pickup day. |
+| `binary_sensor.nvoa_storgatan_1_pickup_soon` | on/off | On from *N* days before a pickup until the pickup is done (end of the pickup day, or the *Pickup done at* time). |
 
 ### Attributes
 
@@ -115,7 +115,7 @@ All entities belong to one device per address (`NVOA <street>`). Entity IDs belo
 
 **Next pickup sensor:** `types` (list of what is collected that day) and `days_until`.
 
-**Pickup soon sensor:** `types`, `next_pickup`, `days_until` and `advance_days`.
+**Pickup soon sensor:** `types`, `next_pickup`, `days_until`, `advance_days` and `pickup_done_time`.
 
 ## 🔔 Options
 
@@ -124,8 +124,9 @@ Open **Configure** on the integration:
 | Option | Default | Description |
 |--------|---------|-------------|
 | Days of advance notice | `1` | The *Pickup soon* sensor turns on this many days before a pickup (0 to 14). `0` means only on the day itself. |
+| Pickup done at | *empty* | Time when your bins are usually emptied, e.g. `08:00`. On the pickup day, *Pickup soon* turns off at this time instead of at midnight. Leave empty to keep it on all day. |
 
-The sensor changes state at about 00:05, so with `1` it is on for the whole day before the pickup and the pickup day itself.
+The sensor changes state at about 00:05, so with `1` it is on for the whole day before the pickup and the pickup day itself, up to *Pickup done at* if set. The date sensors are not affected: they show today's date for the whole pickup day.
 
 ## 🤖 Examples
 
